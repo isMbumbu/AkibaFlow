@@ -3,8 +3,7 @@ from fastapi import Depends
 from app.core.db.session import get_db
 from sqlalchemy.orm import Session
 
-# Dependency for database session
-# This is a wrapper, but good practice for organization
+
 def get_db_session() -> Generator[Session, None, None]:
     yield from get_db()
     

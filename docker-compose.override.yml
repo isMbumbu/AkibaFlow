@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  # --------------------
+  # 1. API Service (Development Overrides)
+  # --------------------
+  api:
+    # Use command for hot-reloading in dev environment
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # Ensure local directory changes are reflected instantly
+    volumes:
+      - .:/app
+    
+  # --------------------
+  # 2. Redis Service (Message Broker for Celery)
+  # --------------------
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server
+  
+  # --------------------
+  # 3. Celery Worker (Background Tasks)
+  # --------------------
+  celery_worker:
+    build:
+      context: .
+      # If you were using a separate celery Dockerfile, you'd specify it here. 
+      # For now, we use the main Dockerfile.
+    command: celery -A app.celery.celery worker -l info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    # Map the entire app directory for the worker
+    volumes:
+      - .:/app
+
