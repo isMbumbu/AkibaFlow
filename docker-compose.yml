@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  # --------------------
+  # 1. API Service (FastAPI)
+  # --------------------
+  api:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    # Overrides the Dockerfile CMD to enable live reloading for development
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  
+  # --------------------
+  # 2. Database Service (PostgreSQL)
+  # --------------------
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

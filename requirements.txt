@@ -1,0 +1,24 @@
+# Core FastAPI dependencies
+fastapi
+uvicorn[standard]
+
+# Database/ORM
+sqlalchemy
+psycopg2-binary
+alembic
+
+# Config and Serialization
+pydantic-settings
+python-multipart # Needed for forms, file uploads (CSV import!)
+passlib[bcrypt]  # Password hashing
+python-jose[cryptography] # JWT/Auth
+
+# Async Tasks (Celery/Redis) - Install these later if you implement Celery
+# celery
+# redis
+
+# Testing/Dev
+pytest
+flake8
+black
+isort
