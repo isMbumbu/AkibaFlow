@@ -1,40 +1,36 @@
-version: "3.9"
 
 services:
   # --------------------
-  # 1. API Service (Development Overrides)
+  # 1. API Service (FastAPI)
   # --------------------
   api:
-    # Use command for hot-reloading in dev environment
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    # Ensure local directory changes are reflected instantly
+    build: .
     volumes:
       - .:/app
-    
-  # --------------------
-  # 2. Redis Service (Message Broker for Celery)
-  # --------------------
-  redis:
-    image: redis:7-alpine
     ports:
-      - "6379:6379"
-    command: redis-server
-  
-  # --------------------
-  # 3. Celery Worker (Background Tasks)
-  # --------------------
-  celery_worker:
-    build:
-      context: .
-      # If you were using a separate celery Dockerfile, you'd specify it here. 
-      # For now, we use the main Dockerfile.
-    command: celery -A app.celery.celery worker -l info
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
       - db
-      - redis
-    # Map the entire app directory for the worker
-    volumes:
-      - .:/app
+    # NOTE: The command here is overridden by docker-compose.override.yml in dev mode!
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 
 
+  # --------------------
+  # 2. Database Service (PostgreSQL)
+  # --------------------
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      # HOST PORT CHANGED to 5433 to resolve 'address already in use' error.
+      # The API service still connects to 'db:5432'.
+      - "5433:5432" 
+
+volumes:
+  postgres_data:

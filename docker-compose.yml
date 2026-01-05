@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # --------------------
   # 1. API Service (FastAPI)
@@ -14,9 +12,9 @@ services:
       - .env
     depends_on:
       - db
-    # Overrides the Dockerfile CMD to enable live reloading for development
+    # This command uses hot-reload for development, read from docker-compose.override.yml if present
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-  
+
   # --------------------
   # 2. Database Service (PostgreSQL)
   # --------------------
@@ -29,7 +27,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      # HOST:CONTAINER
+      # Changed from "5432:5432" to avoid "address already in use" error 
+      - "5433:5432" 
 
 volumes:
   postgres_data:
