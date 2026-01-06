@@ -31,18 +31,21 @@ AkibaFlow is a comprehensive budgeting application designed to help users plan t
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/akibaflow.git
    cd akibaflow
    ```
 
 2. Create environment file:
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 3. Start the application:
+
    ```bash
    docker-compose up --build
    ```
@@ -52,11 +55,13 @@ AkibaFlow is a comprehensive budgeting application designed to help users plan t
 ### Local Development
 
 1. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 2. Run database migrations:
+
    ```bash
    alembic upgrade head
    ```
@@ -69,19 +74,23 @@ AkibaFlow is a comprehensive budgeting application designed to help users plan t
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/v1/auth/login` - User login
 - `POST /api/v1/auth/register` - User registration
 
 ### User Management
+
 - `GET /api/v1/user/me` - Get current user info
 - `PUT /api/v1/user/me` - Update user profile
 
 ### Transactions (Planned)
+
 - `GET /api/v1/transactions` - List transactions
 - `POST /api/v1/transactions` - Create transaction
 - `PUT /api/v1/transactions/{id}` - Update transaction
 
 ### Budgets (Planned)
+
 - `GET /api/v1/budgets` - List budgets
 - `POST /api/v1/budgets` - Create budget
 - `PUT /api/v1/budgets/{id}` - Update budget
@@ -122,4 +131,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [ ] Financial reports and analytics
 - [ ] Mobile app companion
 - [ ] Multi-currency support</content>
-<parameter name="filePath">/home/andrew-ambuka/AkibaFlow/README.md
+      <parameter name="filePath">/home/andrew-ambuka/AkibaFlow/README.md

@@ -1,14 +1,29 @@
 [project]
-name = "akibaflow"
+name = "AkibaFlowAPI"
 version = "0.1.0"
-description = "AkibaFlow API"
-requires-python = ">=3.12"
-
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
 dependencies = [
-  "fastapi",
-  "uvicorn[standard]",
-  "sqlalchemy",
-  "alembic",
-  "psycopg2-binary",
-  "pydantic-settings",
+    "alembic>=1.16.2",
+    "fastapi[standard]",
+    "psycopg[binary]>=3.2.9",
+    "sqlmodel>=0.0.24",
+    "tenacity",
+    "pydantic-settings",
+    "pyjwt>=2.10.1",
+    "passlib[bcrypt]<2.0.0,>=1.7.4",
+    "pytz>=2025.2",
+    # Pin bcrypt until passlib supports the latest
+    "bcrypt==4.0.1",
+    "phonenumbers>9.0.8,<9.1.0",
+    "africastalking==1.2.9",
+    "celery==5.5.3",
+    "redis==6.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.9.1",
+    "pytest>=8.4.1",
 ]
