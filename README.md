@@ -1,25 +1,32 @@
 # AkibaFlow - Budgeting App
 
-AkibaFlow is a comprehensive budgeting application designed to help users plan their finances and track expenses effortlessly. The app leverages SMS integration to automatically capture and categorize spending, making financial management intuitive and accessible.
+**Version:** 0.1.0 | **OpenAPI Spec:** OAS 3.1
+
+AkibaFlow is a comprehensive budgeting application designed to help users plan their finances and track expenses effortlessly. The app is built on a high-performance, API-driven architecture and is planned to leverage SMS integration to automatically capture and categorize spending, making financial management intuitive and accessible.
 
 ## Features
 
-- **User Authentication**: Secure login and registration system
-- **Expense Tracking via SMS**: Automatically parse and record expenses from SMS notifications
-- **Budget Planning**: Create and manage personal budgets
-- **Transaction Management**: View, categorize, and analyze spending patterns
-- **Real-time Notifications**: Get alerts on budget limits and spending trends
-- **API-Driven Architecture**: RESTful API for seamless integration
+- **User Authentication**: Secure login and registration system (Email/password and future OTP-based).
+- **User Management**: CRUD operations for user accounts.
+- **Expense Tracking via SMS (Planned)**: Automatically parse and record expenses from SMS notifications.
+- **Budget Planning (Planned)**: Create and manage personal budgets.
+- **Transaction Management (Planned)**: View, categorize, and analyze spending patterns.
+- **Real-time Notifications (Planned)**: Get alerts on budget limits and spending trends.
+- **API-Driven Architecture**: RESTful API for seamless integration with auto-generated documentation.
 
 ## Tech Stack
 
-- **Backend**: FastAPI (Python)
-- **Database**: PostgreSQL with SQLAlchemy ORM
-- **Migrations**: Alembic
-- **Authentication**: JWT tokens
-- **Task Queue**: Celery with Redis
-- **Containerization**: Docker & Docker Compose
-- **Documentation**: Auto-generated API docs with Swagger/ReDoc
+The architecture is built for performance and scalability, leveraging modern Python tools.
+
+| Component            | Technology                   | Role                                                 |
+| :------------------- | :--------------------------- | :--------------------------------------------------- |
+| **Backend**          | FastAPI (Python 3.12+)       | High-performance asynchronous API framework.         |
+| **Database**         | PostgreSQL with SQLModel ORM | Robust relational database and type-safe ORM.        |
+| **Migrations**       | Alembic                      | Database schema management.                          |
+| **Authentication**   | JWT tokens                   | Stateless security.                                  |
+| **Task Queue**       | Celery with Redis            | Background processing for scheduled and heavy tasks. |
+| **Containerization** | Docker & Docker Compose      | Consistent development and deployment environment.   |
+| **Documentation**    | Swagger UI / ReDoc           | Auto-generated API documentation.                    |
 
 ## Quick Start
 
@@ -27,108 +34,96 @@ AkibaFlow is a comprehensive budgeting application designed to help users plan t
 
 - Docker and Docker Compose
 - Python 3.12+
+- Git
 
-### Installation
+### Installation (Recommended)
 
-1. Clone the repository:
+Use Docker Compose for the fastest setup.
 
-   ```bash
-   git clone https://github.com/yourusername/akibaflow.git
-   cd akibaflow
-   ```
+1.  Clone the repository:
 
-2. Create environment file:
+    ```bash
+    git clone [https://github.com/yourusername/akibaflow.git](https://github.com/yourusername/akibaflow.git)
+    cd akibaflow
+    ```
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+2.  Create and configure the environment file:
 
-3. Start the application:
+    ```bash
+    cp .env.example .env
+    # IMPORTANT: Edit the .env file with your specific configurations (DB credentials, secrets).
+    ```
 
-   ```bash
-   docker-compose up --build
-   ```
+3.  Build and start all services:
 
-4. Access the API documentation at `http://localhost:8000/api/v1/docs`
+    ```bash
+    docker-compose up --build
+    ```
 
-### Local Development
+4.  Access the API documentation:
 
-1. Install dependencies:
+    - Swagger UI: `http://localhost:8000/api/v1/docs`
+    - ReDoc: `http://localhost:8000/api/v1/redoc`
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Local Development (Alternative)
 
-2. Run database migrations:
+If you prefer to run the application directly on your host machine:
 
-   ```bash
-   alembic upgrade head
-   ```
+1.  Install dependencies:
 
-3. Start the server:
-   ```bash
-   uvicorn app.main:app --reload
-   ```
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2.  Run database migrations (Ensure PostgreSQL is running locally):
+
+    ```bash
+    alembic upgrade head
+    ```
+
+3.  Start the server:
+
+    ```bash
+    uvicorn app.main:app --reload
+    ```
 
 ## API Endpoints
 
+The API is versioned under `/api/v1/` and uses standard HTTP status codes.
+
+### Home / Health
+
+| Method | Endpoint                 | Description                               |
+| :----- | :----------------------- | :---------------------------------------- |
+| `GET`  | `/` or `/api/v1/`        | Home endpoints.                           |
+| `GET`  | `/api/v1/liveness-check` | Health check for container orchestration. |
+
 ### Authentication
 
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/register` - User registration
+| Method | Endpoint              | Description                                    |
+| :----- | :-------------------- | :--------------------------------------------- |
+| `POST` | `/api/v1/auth/login`  | Login using email and password.                |
+| `GET`  | `/api/v1/auth/whoami` | Get info about the current authenticated user. |
 
 ### User Management
 
-- `GET /api/v1/user/me` - Get current user info
-- `PUT /api/v1/user/me` - Update user profile
+| Method | Endpoint                 | Description               | Schema          |
+| :----- | :----------------------- | :------------------------ | :-------------- |
+| `GET`  | `/api/v1/user`           | Get all users.            | `UserRead`      |
+| `POST` | `/api/v1/user`           | Create a new user.        | `UserCreate`    |
+| `GET`  | `/api/v1/user/search`    | Search users by criteria. | -               |
+| `GET`  | `/api/v1/user/{user_id}` | Get a user by ID.         | `UserRead`      |
+| `PUT`  | `/api/v1/user/{user_id}` | Update a user by ID.      | `UserUpdateReq` |
 
-### Transactions (Planned)
+---
 
-- `GET /api/v1/transactions` - List transactions
-- `POST /api/v1/transactions` - Create transaction
-- `PUT /api/v1/transactions/{id}` - Update transaction
+### Schemas (Key Models)
 
-### Budgets (Planned)
-
-- `GET /api/v1/budgets` - List budgets
-- `POST /api/v1/budgets` - Create budget
-- `PUT /api/v1/budgets/{id}` - Update budget
+| Schema                | Description                                             |
+| :-------------------- | :------------------------------------------------------ |
+| `Token`               | JWT access token response.                              |
+| `UserCreate`          | Request body for creating a new user.                   |
+| `UserRead`            | Standard response model for returning user information. |
+| `HTTPValidationError` | Standard validation error response.                     |
 
 ## Project Structure
-
-```
-akibaflow/
-├── app/
-│   ├── api/v1/          # API version 1 routes
-│   ├── core/            # Configuration and core functionality
-│   ├── models/          # Database models
-│   ├── schemas/         # Pydantic schemas
-│   └── celery/          # Background tasks
-├── tests/               # Test suites
-├── scripts/             # Utility scripts
-├── alembic/             # Database migrations
-└── docker-compose.yml   # Container orchestration
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit changes: `git commit -am 'Add new feature'`
-4. Push to branch: `git push origin feature/your-feature`
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Roadmap
-
-- [ ] SMS parsing and integration
-- [ ] Budget creation and monitoring
-- [ ] Transaction categorization
-- [ ] Financial reports and analytics
-- [ ] Mobile app companion
-- [ ] Multi-currency support</content>
-      <parameter name="filePath">/home/andrew-ambuka/AkibaFlow/README.md
