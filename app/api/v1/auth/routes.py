@@ -5,6 +5,7 @@ from app.api import deps as global_deps
 from app.api.v1.auth import (
     schemas as auth_schemas, service as auth_service)
 
+from app.api.v1.user import schemas as user_schemas
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
@@ -32,3 +33,20 @@ async def whoami(
 ):
     return await auth_service.whoami(
         session=session, current_user=current_user)
+
+
+@router.post(
+    '/register',
+    status_code=status.HTTP_201_CREATED,
+    response_model=auth_schemas.UserRead,
+)
+async def register( 
+    session: global_deps.SessionDep, 
+    user_in: user_schemas.UserRegister,
+) -> auth_schemas.UserRead:
+    """
+    Route to register a new user. This endpoint is publicly accessible.
+    """
+    return await auth_service.register(
+        session=session, user_in=user_in
+    )
