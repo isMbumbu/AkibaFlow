@@ -15,6 +15,6 @@ venv/
 .vscode/
 .DS_Store
 
-# Alembic
-alembic.ini
-app/alembic/versions
+# # Alembic
+# alembic.ini
+# app/alembic/versions
