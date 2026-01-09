@@ -29,6 +29,12 @@ class AccountBase(SQLModel):
         default=Decimal("0.00"), 
         sa_column=Column(DECIMAL(precision=12, scale=2), nullable=False)
     )
+
+    current_balance: Optional[Decimal] = Field(
+        sa_column=Column(DECIMAL(precision=12, scale=2), default=None),
+        default=None,
+        description="The calculated balance after all transactions. Null if never calculated."
+    )
     
     currency: str = Field(default="KES", max_length=5)
     type: AccountType = Field(default=AccountType.CHECKING)

@@ -1,10 +1,14 @@
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship
+from typing import List
 
 from app.core.config import settings
 from app.api.v1.user import schemas as user_schemas
+from app.api.v1.account import models as account_models 
+from app.api.v1.transaction import models as transaction_models
+from app.api.v1.category import models as category_models
 
 
 class User(user_schemas.UserBase, table=True):
@@ -27,3 +31,19 @@ class User(user_schemas.UserBase, table=True):
             'onupdate': lambda: datetime.now(tz=timezone.utc)
         }
     )
+    accounts: List["Account"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"foreign_keys": "[Account.user_id]"} 
+    )
+
+    transactions: List["Transaction"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"foreign_keys": "[Transaction.user_id]"} 
+    )
+    
+    # One User has many Categories
+    categories: List["Category"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"foreign_keys": "[Category.user_id]"}
+    )
+    

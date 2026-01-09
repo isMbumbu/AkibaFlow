@@ -18,6 +18,7 @@ async def create_account(
     Note: Converts initial_balance (float from API) to Decimal for storage.
     """
     # 1. Create Account instance
+    # Note: current_balance will be None initially, which is handled in update_account_balance
     account_obj = account_model.Account.model_validate(
         account_in,
         update={
@@ -93,22 +94,9 @@ async def update_account(
     return db_account
 
 
-# --- Helper/Business Logic Functions (Moved to Repository as Requested) ---
+# --- Helper/Business Logic Functions ---
 
-async def calculate_current_balance(
-    account: account_model.Account,
-) -> account_model.Account:
-    """
-    Calculates and sets the current balance for the account.
-    (NOTE: This is typically Service Layer logic.)
-    """
-    # Placeholder logic; replace with actual transaction summation
-    # We must assume the ORM model (Account) has a 'current_balance' field now.
-    # Since it doesn't in models.py, we only return the original account object for now.
-    # In the service layer, we will use initial_balance.
-    
-    # For now, just return the account object as the balance must be calculated later.
-    return account
+# REMOVED: calculate_current_balance (It was a redundant placeholder, logic is in service/routes)
 
 
 async def get_account_details(
@@ -118,17 +106,13 @@ async def get_account_details(
 ) -> account_model.Account | None:
     """
     Retrieves account details by ID, enforcing ownership.
-    (NOTE: This combines two Repository functions.)
     """
+    # Simply retrieves the account; the balance conversion is done in the routes layer.
     account = await get_account_by_id(
         session=session,
         account_id=account_id,
         user_id=user_id,
     )
-    
-    # The service layer will handle the final schema conversion and calculation
-    # if account:
-    #     account = await calculate_current_balance(account) 
     
     return account
 
@@ -140,7 +124,6 @@ async def delete_account(
 ) -> None:
     """
     Soft-deletes (deactivates) an account by setting is_active to False.
-    (Reverted to use update statement as requested.)
     """
     statement = (
         update(account_model.Account)
@@ -150,3 +133,32 @@ async def delete_account(
     )
     session.exec(statement)
     session.commit()
+
+
+async def update_account_balance(
+    session: Session,
+    account: account_model.Account,
+    balance_change: Decimal,
+) -> account_model.Account:
+    """
+    Applies a calculated change to the account's current_balance and persists it.
+    
+    The transaction service calculates the 'balance_change' (positive or negative)
+    and passes it here to update the account record.
+    """
+    
+    # 1. Get the current balance value (if none exists, use initial balance)
+    current_balance = account.current_balance if account.current_balance is not None else account.initial_balance
+    
+    # 2. Apply the change
+    new_balance = current_balance + balance_change
+    
+    # 3. Update the ORM object
+    account.current_balance = new_balance
+    
+    # 4. Persist the changes
+    session.add(account)
+    session.commit()
+    session.refresh(account)
+    
+    return account

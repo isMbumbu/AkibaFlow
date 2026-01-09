@@ -1,7 +1,8 @@
 from datetime import datetime, timezone 
 from decimal import Decimal
+from typing import List
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship 
 from app.api.v1.account.schemas import AccountBase
 
 
@@ -28,4 +29,12 @@ class Account(AccountBase, table=True):
     )
     
     # Relationships would go here
-    # transactions: Relationship = Relationship(back_populates="account")
+    user: "User" = Relationship(
+        back_populates="accounts",
+        sa_relationship_kwargs={
+            "foreign_keys": "[Account.user_id]" 
+        }
+    )
+    
+    # Link to Transactions (Needs string literal)
+    transactions: List["Transaction"] = Relationship(back_populates="account")
