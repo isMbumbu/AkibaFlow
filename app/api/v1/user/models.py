@@ -46,3 +46,4 @@ class User(user_schemas.UserBase, table=True):
         back_populates="user",
         sa_relationship_kwargs={"foreign_keys": "[Category.user_id]"}
     )
+    

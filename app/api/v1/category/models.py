@@ -1,6 +1,7 @@
 # app/api/v1/category/models.py (Proposed Final Fix)
 
 from typing import List, Optional
+from datetime import datetime, timezone
 
 from sqlmodel import Field, Relationship, SQLModel # Ensure these are imported
 from app.api.v1.category.schemas import CategoryBase # Assuming you have a CategoryBase
@@ -18,6 +19,16 @@ class Category(CategoryBase, table=True):
 
     created_by: int | None = Field(foreign_key='user.id', default=None)
     updated_by: int | None = Field(foreign_key='user.id', default=None)
+    created_at: datetime | None = Field(
+        default_factory=lambda: datetime.now(tz=timezone.utc)
+    )
+    
+    updated_at: datetime | None = Field(
+        default_factory=lambda: datetime.now(tz=timezone.utc),
+        sa_column_kwargs={
+            'onupdate': lambda: datetime.now(tz=timezone.utc)
+        }
+    )
 
     user: "User" = Relationship(
         back_populates="categories",
@@ -26,3 +37,4 @@ class Category(CategoryBase, table=True):
     
     # Back-link to Transactions (assuming the foreign key is correctly defined on the Transaction model)
     transactions: List["Transaction"] = Relationship(back_populates="category")
+    

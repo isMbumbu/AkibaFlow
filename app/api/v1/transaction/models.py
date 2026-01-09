@@ -1,9 +1,8 @@
 from typing import Optional
 
-from sqlmodel import Field, Relationship # Ensure Relationship is imported
+from sqlmodel import Field, Relationship
+from datetime import datetime, timezone
 
-# Assuming TimeStampedModel definition is accessible via imports or implicitly handled
-# We use TransactionBase from the same module structure
 from app.api.v1.transaction.schemas import TransactionBase
 
 
@@ -22,6 +21,20 @@ class Transaction(TransactionBase, table=True):
         back_populates="transactions",
         sa_relationship_kwargs={"foreign_keys": "[Transaction.user_id]"}
     )
+
+    created_by: int | None = Field(foreign_key='user.id', default=None)
+    updated_by: int | None = Field(foreign_key='user.id', default=None)
+    created_at: datetime | None = Field(
+        default_factory=lambda: datetime.now(tz=timezone.utc)
+    )
+    
+    updated_at: datetime | None = Field(
+        default_factory=lambda: datetime.now(tz=timezone.utc),
+        sa_column_kwargs={
+            'onupdate': lambda: datetime.now(tz=timezone.utc)
+        }
+    )    
+
     
     account: "Account" = Relationship(back_populates="transactions") 
 
