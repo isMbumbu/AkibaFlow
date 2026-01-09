@@ -9,6 +9,9 @@ from app.api.v1.base import routes as base_routes
 from app.api.v1.auth import routes as auth_routes
 from app.api.v1.user import routes as user_routes
 from app.api.v1.account import routes as account_routes 
+from app.api.v1.transaction import routes as transaction_routes
+from app.api.v1.category import routes as category_routes
+
 
 api_router = APIRouter()
 
@@ -17,3 +20,5 @@ api_router.include_router(router=base_routes.router)
 api_router.include_router(router=auth_routes.router)
 api_router.include_router(router=user_routes.router)
 api_router.include_router(router=account_routes.router) 
+api_router.include_router(router=transaction_routes.router)
+api_router.include_router(router=category_routes.router)
