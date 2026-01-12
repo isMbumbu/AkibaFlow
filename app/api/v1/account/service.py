@@ -20,10 +20,10 @@ router = APIRouter(tags=['Accounts'])
 def calculate_current_balance(account) -> account_schemas.AccountRead:
     """
     Helper to convert the ORM model to the Read schema, calculating the balance.
-    NOTE: For now, balance = initial_balance. This is where transaction logic will go later.
+    Uses the stored current_balance if available, otherwise falls back to initial_balance.
     """
-    # The current_balance logic remains a service responsibility
-    current_balance = account.initial_balance 
+    # Use the updated current_balance from transactions, or initial_balance if not set
+    current_balance = account.current_balance if account.current_balance is not None else account.initial_balance
     
     # Use model_validate to construct the AccountRead schema with the derived balance
     return account_schemas.AccountRead.model_validate(
@@ -213,4 +213,35 @@ async def delete_account(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred during account deletion."
+        )
+
+
+@router.get(
+    '/total-balance',
+    status_code=status.HTTP_200_OK,
+    response_model=dict,
+)
+async def get_total_balance(
+    session: SessionDep,
+    current_user: Annotated[User, Depends(current_active_user)],
+):
+    """Retrieves the total balance across all active accounts for the current user."""
+    try:
+        accounts = await account_repository.get_user_accounts(
+            session=session,
+            user_id=current_user.id,
+        )
+        
+        total_balance = Decimal('0.00')
+        for acc in accounts:
+            account_read = calculate_current_balance(acc)
+            total_balance += account_read.current_balance
+        
+        return {"total_balance": total_balance}
+        
+    except Exception as e:
+        app_logger.error(f"Failed to calculate total balance for user {current_user.id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while calculating total balance."
         )
