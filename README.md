@@ -1,4 +1,4 @@
-# AkibaFlow - Budgeting App
+# AkibaFlow - Budgeting App Improved
 
 **Version:** 0.1.0 | **OpenAPI Spec:** OAS 3.1
 
