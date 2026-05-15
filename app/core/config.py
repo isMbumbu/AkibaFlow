@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     APP_TIMEZONE: str = 'Africa/Nairobi'
 
     # Basic app configuration
-    PROJECT_NAME: str = 'SokoPay API'
+    PROJECT_NAME: str = 'AkibaFlow API'
     API_VERSION_STR: str = '/api/v1'
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 2 days = 2 days
